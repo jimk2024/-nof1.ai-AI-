@@ -1,0 +1,355 @@
+:root {
+  /* 暗色主题（模仿币安配色） */
+  --bg: #0B0E11;
+  --panel-bg: #1E2329;
+  --surface-2: #161A1E;
+  --border: #2b3139;
+  --text: #EAECEF;
+  --muted: #848E9C;
+  --accent: #F0B90B;
+  --buy: #0ECB81;
+  --sell: #F6465D;
+  --warn: #F0B90B;
+  --row-hover: #20262D;
+  --row-stripe: #181D23;
+  --row-selected: #262B33;
+  /* 高度变量 */
+  --col1-card: 360px;
+  --stack-gap: 12px;
+  --col1-count: 6;
+  --col1-total-h: calc(var(--col1-card) * var(--col1-count) + var(--stack-gap) * (var(--col1-count) - 1));
+}
+
+/* 明亮主题变量覆盖 */
+:root.theme-light {
+  --bg: #ffffff;
+  --panel-bg: #f7f7f8;
+  --surface-2: #ffffff;
+  --border: #d7d7da;
+  --text: #1f1f20;
+  --muted: #6b6b72;
+  --accent: #F0B90B;
+  --buy: #0ECB81;
+  --sell: #F6465D;
+  --warn: #F0B90B;
+  --row-hover: #f1f3f5;
+  --row-stripe: #f9fafb;
+  --row-selected: #fff6d1;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 16px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 360px 520px 640px; /* 加宽第三列，便于更多数据显示 */
+  gap: 16px;
+  align-items: start;
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) minmax(0, 1.5fr);
+  gap: 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  align-self: start;
+}
+.topbar__item { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.topbar__item .label { color: var(--muted); font-size: 12px; }
+.topbar__item .value { font-weight: 600; font-size: 16px; margin-left: 6px; }
+.topbar__status { justify-content: flex-end; }
+
+.col { width: 100%; display: flex; flex-direction: column; }
+
+.stack { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+}
+
+/* 第二列整体高度与第一列持平，底部卡片填满剩余空间 */
+.col-2 .stack { height: var(--col1-total-h); overflow: hidden; }
+.col-2 .stack .panel:last-child { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.col-2 .stack .panel:last-child .panel__text { height: auto; flex: 1 1 0; min-height: 0; overflow-y: auto; }
+
+.panel {
+  width: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.panel__title {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.panel__text {
+  margin: 0;
+  padding: 10px 12px;
+  height: 580px; /* 默认高度（非第一列） */
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.35;
+  background: var(--panel-bg);
+  color: var(--text);
+}
+
+.panel__text.small {
+  height: 340px; /* AI输出增高一点 */
+}
+
+/* 第二列：底部AI命令执行记录填满剩余空间，内部滚动 */
+.col-2 .stack .panel:last-child { flex: 1; display: flex; flex-direction: column; }
+.col-2 .stack .panel:last-child .panel__text { height: auto; flex: 1; min-height: 0; overflow-y: auto; }
+
+.panel__footer {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+.panel__footer .right { float: right; }
+
+.ok { color: var(--buy); }
+.warn { color: var(--warn); }
+.err { color: var(--sell); }
+.ai-panel { width: 100%; }
+.ai-panel { width: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+.contract-panel { width: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+.contract-form { padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--panel-bg); }
+.form-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.form-row label { min-width: 80px; color: var(--muted); }
+.form-row input, .form-row select { flex: 1; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); color: var(--text); }
+.form-row input::placeholder, .form-row select::placeholder { color: var(--muted); }
+.form-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.chart-wrap { width: 100%; aspect-ratio: 5 / 3; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 6px; }
+.chart-wrap canvas { width: 100%; height: 100%; display: block; }
+.contract-panel .chart-row label { min-width: 80px; align-self: flex-start; }
+.tables { padding: 8px 12px; }
+.table-block { margin-bottom: 10px; }
+.table-title { font-weight: 600; color: var(--muted); margin: 4px 0; }
+.grid-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.grid-table thead th { position: sticky; top: 0; background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 6px; text-align: left; color: var(--text); }
+.grid-table tbody td { border-top: 1px solid var(--border); padding: 6px; color: var(--text); }
+.grid-table tbody tr:hover { background: var(--row-hover); }
+/* 轻微条纹与选中态 */
+.grid-table tbody tr:nth-child(odd) { background: var(--row-stripe); }
+.grid-table tbody tr.selected { background: var(--row-selected); outline: 1px solid var(--accent); }
+.action-link { color: var(--accent); cursor: pointer; }
+.action-link:hover { text-decoration: underline; }
+.warn { background: var(--warn); color: #0B0E11; border: 0; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+
+.account-box { padding: 8px 12px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--panel-bg); }
+.account-box .item { background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+.account-box .label { color: var(--muted); font-size: 12px; }
+.account-box .value { font-weight: 600; font-size: 14px; }
+.ai-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px dashed var(--border);
+}
+.ai-row label { min-width: 80px; color: var(--muted); }
+.ai-row input,
+.ai-row select,
+.ai-row textarea {
+  flex: 1;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.ai-row textarea { min-height: 36px; line-height: 1.5; }
+.ai-row.column { flex-direction: column; align-items: stretch; }
+.ai-actions { display: flex; gap: 8px; align-items: center; }
+.ai-history { padding: 6px 12px; }
+.history-list { list-style: none; margin: 8px 12px; padding: 0; max-height: 180px; overflow: auto; }
+.history-list li { cursor: pointer; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; background: var(--surface-2); color: var(--text); }
+.history-list li:hover { background: var(--row-hover); }
+.checkboxes { display: flex; flex-wrap: wrap; gap: 8px; }
+.primary { background: var(--accent); color: #fff; border: 0; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+button { cursor: pointer; }
+
+/* 第二列（AI面板）字体与布局优化：更紧凑，减少回行 */
+.col-2 .ai-panel { font-size: 13px; }
+.col-2 .ai-panel .panel__title { font-size: 14px; }
+.col-2 .ai-panel .ai-row { gap: 6px; }
+.col-2 .ai-panel .ai-row label { min-width: 72px; font-size: 12px; }
+.col-2 .ai-panel .ai-row label.inline { min-width: auto; }
+.col-2 .ai-panel .ai-row input[type="password"],
+.col-2 .ai-panel .ai-row select,
+.col-2 .ai-panel .ai-row textarea { font-size: 13px; padding: 5px 7px; }
+.col-2 .ai-panel .panel__text { font-size: 12px; line-height: 1.35; }
+.col-2 .ai-panel .ai-actions button,
+.col-2 .ai-panel button { font-size: 13px; padding: 5px 10px; }
+.col-2 .ai-panel .muted { font-size: 12px; }
+
+/* 滚动容器：保持约50行高度（行高约22px），超出滚动 */
+.table-scroll { display: block; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); }
+.scroll-rows-50 { max-height: calc(22px * 50); }
+/* 新增：限制为约20行高度 */
+.scroll-rows-20 { max-height: calc(22px * 20); }
+
+/* 允许panel文本也应用相同滚动高度限制 */
+.panel__text.scroll-rows-50 { max-height: calc(22px * 50); height: auto; }
+.col-2 .ai-panel .ai-row.data-row {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.col-2 .ai-panel .ai-row.send-row {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 8px;
+}
+.col-2 .ai-panel .send-row select { min-width: 96px; }
+.col-2 .ai-panel .ai-row.status-row { justify-content: flex-start; }
+.col-2 .ai-panel .auto-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.col-2 .ai-panel .auto-group select { min-width: 96px; }
+.col-2 .ai-panel .ai-actions { justify-self: end; }
+
+/* 第三列（合约面板）统一字体到第二列风格 */
+.col-3 .stack { height: var(--col1-total-h); overflow: hidden; display: flex; flex-direction: column; }
+.col-3 .contract-panel { font-size: 13px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.contract-panel .tables { flex: 1; min-height: 0; overflow: hidden; }
+.col-3 .contract-panel .panel__title { font-size: 14px; }
+.col-3 .contract-panel .contract-form .form-row { gap: 6px; margin-bottom: 8px; }
+.col-3 .contract-panel .form-row label { min-width: 72px; font-size: 12px; }
+.col-3 .contract-panel .form-row input,
+.col-3 .contract-panel .form-row select { font-size: 13px; padding: 5px 7px; }
+.col-3 .contract-panel .form-actions button,
+.col-3 .contract-panel button { font-size: 13px; padding: 5px 10px; }
+.col-3 .contract-panel .muted { font-size: 12px; }
+
+/* 第一列（行情卡片）高度等于宽度，统一为方形卡片 */
+.col-1 .panel { display: flex; flex-direction: column; height: 360px; overflow: hidden; }
+.col-1 .panel__text { height: auto; flex: 1; min-height: 0; overflow-y: auto; }
+/* 第一列（行情卡片）字体大小与第二列保持一致 */
+.col-1 .panel { font-size: 13px; }
+.col-1 .panel__title { font-size: 14px; }
+.col-1 .panel__text { font-size: 12px; line-height: 1.35; }
+.col-1 .panel .muted { font-size: 12px; }
+
+/* 删除：币安实盘卡片样式（已移除对应模块） */
+
+/* 按钮与开关（醒目配色） */
+button { cursor: pointer; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; transition: background-color .12s ease, box-shadow .12s ease, transform .05s ease; box-shadow: 0 1px 0 rgba(0,0,0,.3); }
+.primary { background: var(--accent); color: #0B0E11; border: 0; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: filter .12s ease, box-shadow .12s ease, transform .05s ease; }
+button:hover { box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+button:active { transform: translateY(1px); box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.primary:hover { filter: brightness(1.04); }
+.primary:active { filter: brightness(0.98); }
+button.primary.toggle-off { background: #2b3139; color: var(--muted); border: 1px solid var(--border); }
+button.primary.toggle-on { background: var(--accent); color: #0B0E11; border: 0; }
+.toggle-on { background: var(--accent) !important; color: #0B0E11 !important; border: 0 !important; }
+.toggle-off { background: #2b3139 !important; color: var(--muted) !important; border: 1px solid var(--border) !important; }
+
+/* 底部通条（与顶部价格栏风格一致） */
+.bottombar {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) minmax(0, 1.5fr);
+  gap: 8px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  padding: 8px 12px;
+  margin-top: 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  align-self: end;
+}
+.bottombar__item { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+.bottombar__item .label { color: var(--muted); font-size: 12px; }
+.bottombar__item .value { font-weight: 600; font-size: 16px; margin-left: 6px; }
+.bottombar__status { justify-content: flex-end; }
+
+/* 实盘开关：开启时按钮变红更醒目 */
+#liveToggleBtn.live-on { background: var(--sell); color: #fff; border: 0; }
+#liveToggleBtn.live-on:hover { filter: brightness(1.04); }
+#liveToggleBtn.live-on:active { filter: brightness(0.98); }
+
+/* ====== 移动端适配（<=900px：单列布局，横向滚动价格条） ====== */
+@media (max-width: 900px) {
+  body { padding: 8px; align-items: stretch; }
+  .layout { grid-template-columns: 1fr; gap: 12px; }
+
+  /* 顶部与底部价格栏改为可横向滚动的行 */
+  .topbar, .bottombar {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+  }
+  .topbar__item, .bottombar__item { flex: 0 0 auto; }
+  .topbar__status, .bottombar__status { margin-left: auto; }
+
+  /* 去除固定高度：各列栈容器自适应高度 */
+  .col-2 .stack, .col-3 .stack { height: auto; overflow: visible; }
+  .panel__text { height: 240px; }
+  .panel__text.small { height: 200px; }
+
+  /* 图表区域比例稍微增高，便于触控观察 */
+  .chart-wrap { aspect-ratio: 4 / 3; }
+
+  /* 账户信息改为单列 */
+  .account-box { grid-template-columns: 1fr; }
+
+  /* 表单与AI面板更紧凑 */
+  .form-row label, .ai-row label { min-width: 68px; }
+  .col-2 .ai-panel .ai-row { gap: 6px; }
+  .col-2 .ai-panel .ai-row.send-row,
+  .col-2 .ai-panel .ai-row.data-row { display: flex; flex-wrap: wrap; }
+
+  /* 第一列卡片不再强制固定高度 */
+  .col-1 .panel { height: auto; min-height: 220px; }
+
+  /* 滚动区域在移动端降低高度，避免页面过长 */
+  .scroll-rows-50 { max-height: calc(22px * 30); }
+  .scroll-rows-20 { max-height: calc(22px * 16); }
+}
+
+/* 极窄屏（<=480px）进一步减小字体与间距 */
+@media (max-width: 480px) {
+  .panel__title { font-size: 13px; }
+  .topbar__item .value, .bottombar__item .value { font-size: 14px; }
+  .ai-panel, .contract-panel { font-size: 12px; }
+  .ai-row input, .ai-row select, .ai-row textarea { font-size: 12px; }
+  .form-actions button, .ai-panel button { font-size: 12px; padding: 5px 8px; }
+}
